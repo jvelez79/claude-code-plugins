@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ui-improve-loop-marketplace",
+  "description": "UI Improvement Loop Plugin for Claude Code",
+  "owner": {
+    "name": "jvelez79"
+  },
+  "plugins": [
+    {
+      "name": "ui-improve-loop",
+      "description": "Iterative UI improvement loop using UIReview and Chrome automation. Automatically improves your UI until it reaches a target quality score.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jvelez79"
+      },
+      "source": ".",
+      "category": "development",
+      "homepage": "https://github.com/jvelez79/ui-improve-loop",
+      "tags": ["ui", "design", "review", "automation", "chrome", "loop"]
+    }
+  ]
+}

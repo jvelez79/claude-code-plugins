@@ -1,0 +1,14 @@
+{
+  "name": "ui-improve-loop",
+  "version": "1.0.0",
+  "description": "Iterative UI improvement loop using UIReview and Chrome automation",
+  "author": {
+    "name": "jvelez79"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jvelez79/ui-improve-loop.git"
+  },
+  "license": "MIT",
+  "keywords": ["ui", "design", "review", "automation", "chrome", "loop", "ralph-wiggum"]
+}

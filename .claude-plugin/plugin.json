@@ -5,10 +5,7 @@
   "author": {
     "name": "jvelez79"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jvelez79/ui-improve-loop.git"
-  },
+  "repository": "https://github.com/jvelez79/ui-improve-loop",
   "license": "MIT",
   "keywords": ["ui", "design", "review", "automation", "chrome", "loop", "ralph-wiggum"]
 }

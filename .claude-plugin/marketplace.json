@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "ui-improve-loop-marketplace",
+  "name": "jcv-claude-code-plugins",
   "description": "UI Improvement Loop Plugin for Claude Code",
   "owner": {
     "name": "jvelez79"

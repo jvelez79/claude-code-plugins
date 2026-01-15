@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "jcv-claude-code-plugins",
-  "description": "UI Improvement Loop Plugin for Claude Code",
+  "description": "Collection of Claude Code plugins: UI improvement automation, feature development workflow, and voice notifications",
   "owner": {
     "name": "jvelez79"
   },
@@ -17,6 +17,30 @@
       "category": "development",
       "homepage": "https://github.com/jvelez79/claude-code-plugins",
       "tags": ["ui", "design", "review", "automation", "chrome", "loop"]
+    },
+    {
+      "name": "dev-workflow",
+      "description": "Feature development workflow orchestrating specialized agents: Idea Refiner, Spec Writer, Task Planner, Implementer, E2E Tester, and Reviewer",
+      "version": "1.0.0",
+      "author": {
+        "name": "jvelez79"
+      },
+      "source": "./plugins/dev-workflow",
+      "category": "development",
+      "homepage": "https://github.com/jvelez79/claude-code-plugins",
+      "tags": ["workflow", "development", "feature", "agents", "automation"]
+    },
+    {
+      "name": "voice-notifications",
+      "description": "Notificaciones de voz contextuales en español usando Chatterbox TTS cuando Claude completa tareas o requiere atención",
+      "version": "1.0.0",
+      "author": {
+        "name": "jvelez79"
+      },
+      "source": "./plugins/voice-notifications",
+      "category": "productivity",
+      "homepage": "https://github.com/jvelez79/claude-code-plugins",
+      "tags": ["tts", "voice", "notifications", "accessibility", "chatterbox"]
     }
   ]
 }

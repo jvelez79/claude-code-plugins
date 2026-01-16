@@ -1,0 +1,23 @@
+{
+  "name": "business-advisor",
+  "version": "1.0.0",
+  "description": "Consultor de negocios integrado con tu codebase - valida ideas, prioriza features, planifica lanzamientos, investiga mercados",
+  "author": {
+    "name": "jvelez79"
+  },
+  "repository": "https://github.com/jvelez79/claude-code-plugins",
+  "license": "MIT",
+  "keywords": [
+    "business",
+    "advisor",
+    "consultant",
+    "validation",
+    "prioritization",
+    "launch",
+    "market-research",
+    "strategy",
+    "pricing",
+    "personas",
+    "financial"
+  ]
+}

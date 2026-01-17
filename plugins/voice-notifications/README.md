@@ -36,7 +36,7 @@ Plugin de Claude Code que proporciona notificaciones de voz contextuales en espa
 
 - **Chatterbox TTS** (Resemble AI)
   ```bash
-  pip install chatterbox
+  pip install chatterbox-tts
   ```
 
   Dependencias adicionales según el sistema operativo:
@@ -168,7 +168,7 @@ Nota: Las voces Wavenet ofrecen mayor calidad pero pueden requerir más recursos
 
 **Solución**:
 ```bash
-pip install chatterbox
+pip install chatterbox-tts
 ```
 
 ### Sin dispositivo de audio

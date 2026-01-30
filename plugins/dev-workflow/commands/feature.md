@@ -14,7 +14,17 @@ allowed-tools:
 
 # Feature Development Workflow
 
-Orquesta el desarrollo de un nuevo feature: Idea Refiner -> Spec Writer -> Task Planner -> Implementer -> E2E Tester -> Reviewer
+Orquesta el desarrollo de un nuevo feature:
+
+```
+Design Phase (Idea Refiner) -> Spec Writer -> Task Planner -> Implementer -> E2E Tester -> Reviewer
+```
+
+**Design Phase incluye:**
+- Refinamiento iterativo (3+ rondas)
+- Exploración paralela del codebase (design-explorer agents)
+- Mindmap visual con Pencil MCP
+- Prototipos opcionales con Pencil MCP
 
 ## Argumentos recibidos
 $ARGUMENTS
@@ -55,7 +65,11 @@ Para cada agente:
    - `reviewer`
 
 2. **Guardar output** en el archivo correspondiente:
-   - Idea Refiner -> `.claude/features/<feature-slug>/concept.md`
+   - Idea Refiner (Design Phase) -> genera múltiples archivos:
+     - `.claude/features/<feature-slug>/exploration.md` (hallazgos del codebase)
+     - `.claude/features/<feature-slug>/mindmap.pen` (mapa conceptual visual)
+     - `.claude/features/<feature-slug>/prototypes/*.pen` (prototipos UI, si se aceptan)
+     - `.claude/features/<feature-slug>/concept.md` (requisitos estructurados)
    - Spec Writer -> `.claude/features/<feature-slug>/spec.md`
    - Task Planner -> `.claude/features/<feature-slug>/tasks.md`
    - Reviewer -> `.claude/features/<feature-slug>/review.md`
@@ -118,7 +132,16 @@ Implementer completa código
 **Máximo de iteraciones:** 3
 - Si después de 3 correcciones aún hay errores, preguntar al usuario cómo proceder
 
-### 6. Verificación de Chrome para E2E Tester
+### 6. Integración con Pencil MCP (Design Phase)
+
+La Design Phase (Idea Refiner) usa Pencil MCP para crear artefactos visuales:
+- **mindmap.pen**: Mapa conceptual del proyecto/feature
+- **prototypes/*.pen**: Prototipos de UI de las pantallas
+- **flows/*.pen**: Diagramas de flujo de usuario (via /flow)
+
+Pencil MCP debe estar disponible para generar estos artefactos.
+
+### 7. Verificación de Chrome para E2E Tester
 
 Antes de invocar el E2E Tester, verificar si Chrome está conectado.
 
@@ -137,12 +160,30 @@ Para conectar Chrome:
 - Retoma con: /feature --from e2e-tester
 ```
 
-### 7. Manejo de errores
+### 8. Manejo de errores
 
 Si falla un agente:
 1. Informar el error
 2. Guardar estado parcial
 3. Indicar: `Retomar con: /feature --from <agente>`
+
+## Comandos de diseño standalone
+
+Estos comandos se pueden usar independientemente del workflow:
+
+```bash
+# Crear prototipos desde el concept existente
+/prototype --from-concept
+
+# Crear prototipo de pantalla específica
+/prototype --screen dashboard
+
+# Crear diagrama de flujo
+/flow checkout
+
+# Crear todos los flujos del concept
+/flow --from-concept
+```
 
 ## Ejemplo de uso
 

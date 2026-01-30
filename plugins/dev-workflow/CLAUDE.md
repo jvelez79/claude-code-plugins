@@ -14,34 +14,69 @@ The plugin uses a pipeline of specialized agents, each with isolated context and
 
 ```
 /feature command
-    |
-Idea Refiner -> Clarify requirements (AskUserQuestion tool)
-    |
+    │
+    ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    DESIGN PHASE                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Idea Refiner                                         │   │
+│  │  ├─ PASO 1: Refinamiento (3+ rondas AskUserQuestion) │   │
+│  │  ├─ PASO 1.5: Exploración paralela (design-explorer) │   │
+│  │  ├─ PASO 2: Mindmap con Pencil MCP                   │   │
+│  │  ├─ PASO 3: Prototipos con Pencil MCP (opcional)     │   │
+│  │  └─ PASO 4: concept.md                               │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+    │
+    ▼
 Spec Writer -> Technical specification (file tools)
-    |
+    │
 Task Planner -> Atomic task breakdown (file tools)
-    |
+    │
 Implementer -> Write code and tests (file tools + Bash)
-    |
+    │
 E2E Tester -> Browser testing (Chrome MCP tools)
-    |
+    │
     [Loop: Implementer <-> E2E Tester until passing]
-    |
+    │
 Reviewer -> Code review and approval (file tools + Bash)
 ```
+
+### Design Mode Restrictions
+
+During the Design Phase (Idea Refiner), the following restrictions apply:
+
+**PROHIBITED:**
+- Modifying code in `src/`, `app/`, `lib/`, `components/`
+- Creating/modifying database migrations
+- Modifying `package.json`, `composer.json`, `requirements.txt`
+- Writing production code
+
+**ALLOWED:**
+- Reading existing code for exploration
+- Creating `.pen` files for visual design (Pencil MCP)
+- Creating `.md` documentation files
+- Creating files in `.claude/features/`
 
 ### State Persistence
 
 State is stored in `.claude/features/<feature-slug>/`:
-- `mindmap.md` - Visual concept map (Mermaid)
-- `validation.html` - Interactive mindmap validation page
-- `prototypes/` - HTML prototypes directory (if generated)
-  - `index.html` - Prototype index page
-  - `*.html` - Individual screen prototypes
-- `concept.md` - Structured requirements from Idea Refiner
-- `spec.md` - Technical specification from Spec Writer
-- `tasks.md` - Task breakdown from Task Planner
-- `review.md` - Code review from Reviewer
+
+```
+.claude/features/<feature-slug>/
+├── exploration.md        # Codebase exploration findings
+├── mindmap.pen           # Visual concept map (Pencil MCP)
+├── concept.md            # Structured requirements from Idea Refiner
+├── flows/                # Flow diagrams directory
+│   ├── main-flow.pen     # User flow diagrams
+│   └── error-flow.pen
+├── prototypes/           # UI prototypes directory
+│   ├── dashboard.pen     # Screen prototypes
+│   └── login.pen
+├── spec.md               # Technical specification from Spec Writer
+├── tasks.md              # Task breakdown from Task Planner
+└── review.md             # Code review from Reviewer
+```
 
 ### Workflow Resumption
 
@@ -56,13 +91,15 @@ The workflow supports resumption from any agent using `--from <agent>`:
 | File | Purpose |
 |------|---------|
 | `commands/feature.md` | Main workflow orchestrator |
-| `agents/idea-refiner.md` | Product analyst - clarifies requirements |
+| `commands/prototype.md` | Standalone prototype creation with Pencil |
+| `commands/flow.md` | Flow diagram creation with Pencil |
+| `agents/idea-refiner.md` | Product analyst - clarifies requirements + design mode |
+| `agents/design-explorer.md` | Codebase explorer for parallel exploration |
 | `agents/spec-writer.md` | Technical architect - creates specifications |
 | `agents/task-planner.md` | Tech lead - breaks down into tasks |
 | `agents/implementer.md` | Developer - writes code and tests |
 | `agents/e2e-tester.md` | QA engineer - tests in browser |
 | `agents/reviewer.md` | Senior reviewer - code review |
-| `templates/mindmap-validation.html` | Interactive validation page template |
 
 ## Plugin Commands
 
@@ -81,6 +118,14 @@ The workflow supports resumption from any agent using `--from <agent>`:
 /feature --from implementer
 /feature --from e2e-tester
 /feature --from reviewer
+
+# Standalone design commands
+/prototype                          # Interactive prototype creation
+/prototype --from-concept           # Prototype all screens from concept.md
+/prototype --screen dashboard       # Prototype specific screen
+
+/flow checkout                      # Create flow diagram for checkout
+/flow --from-concept                # Create all flows from concept.md
 ```
 
 ## Command Options
@@ -95,7 +140,8 @@ The workflow supports resumption from any agent using `--from <agent>`:
 
 | Agent | Tools |
 |-------|-------|
-| Idea Refiner | AskUserQuestion, Write, Read, Bash, Chrome MCP |
+| Idea Refiner | AskUserQuestion, Write, Read, Bash, Task, Chrome MCP, Pencil MCP |
+| Design Explorer | Read, Glob, Grep |
 | Spec Writer | Read, Glob, Grep, Bash |
 | Task Planner | Read, Glob, Grep |
 | Implementer | Read, Write, Edit, Bash, Glob, Grep |
@@ -104,75 +150,76 @@ The workflow supports resumption from any agent using `--from <agent>`:
 
 ## Agent Responsibilities
 
-### Idea Refiner
-- Interactive dialogue with user via AskUserQuestion
-- Gap analysis on requirements using checklists
-- **Visual validation with interactive mindmap:**
-  1. Generates Mermaid mindmap when checklist is covered
-  2. Opens validation page in Chrome (or system browser)
-  3. User approves/adjusts/redoes directly from browser
-- **HTML Prototypes (optional but always asked):**
-  1. After mindmap approval, asks if user wants prototypes
-  2. If yes: generates HTML prototypes for each screen/flow
-  3. Prototypes are specific to discussed scope only
-  4. User validates prototypes before continuing
-- Produces:
-  - `mindmap.md` - Visual concept map
-  - `validation.html` - Interactive validation page
-  - `prototypes/` - HTML prototypes (if requested)
-  - `concept.md` - Structured requirements (after all validations)
+### Idea Refiner (Design Phase)
+
+1. **PASO 1: Refinamiento Iterativo**
+   - Interactive dialogue via AskUserQuestion (minimum 3 rounds)
+   - Gap analysis using checklists for project/feature scope
+
+2. **PASO 1.5: Exploración Paralela** (NEW)
+   - Launches 2-3 design-explorer agents in parallel
+   - Explores: patterns, business logic, UI components
+   - Consolidates findings in `exploration.md`
+
+3. **PASO 2: Mindmap con Pencil**
+   - Creates visual mindmap using Pencil MCP
+   - User validates via screenshot and AskUserQuestion
+
+4. **PASO 3: Prototipos con Pencil**
+   - Asks user about prototypes (always asks, user can decline)
+   - If accepted: creates `.pen` prototypes for each screen
+   - Uses style guide for consistent design
+
+5. **PASO 4: concept.md**
+   - Generates structured requirements with exploration findings
+   - References all design artifacts
+
+### Design Explorer
+- Fast parallel exploration agent (haiku model)
+- Searches for patterns, business logic, UI components
+- Returns structured findings for mindmap
 
 ### Spec Writer
 - Analyzes existing codebase patterns
 - Designs technical architecture
-- Produces spec.md with:
-  - Components to create/modify
-  - API contracts
-  - Database schemas
-  - Edge cases
-  - Technical decisions
+- Produces spec.md with components, APIs, schemas
 
 ### Task Planner
 - Dependency analysis
 - Task decomposition
-- Produces tasks.md with:
-  - Atomic, verifiable tasks
-  - Size estimates (S/M/L)
-  - Execution order
-  - Linear-compatible format
+- Produces tasks.md with atomic tasks
 
 ### Implementer
 - Writes production code
 - Creates unit tests
 - Follows project conventions
-- Reports progress per task
 
 ### E2E Tester
 - Tests in live browser (Chrome)
 - Verifies acceptance criteria
-- Reports pass/fail with details
 - Loops with Implementer on failures
 
 ### Reviewer
 - Code quality assessment
 - Security review
-- Test coverage verification
 - Final approval or change requests
 
-## File Format Conventions
+## Pencil MCP Integration
 
-Commands and agents use Markdown with YAML frontmatter:
-```yaml
----
-name: "agent-name"
-description: "Purpose"
-tools:
-  - Tool1
-  - Tool2
-model: sonnet
----
-# Instructions here
-```
+The Design Phase uses Pencil MCP for all visual artifacts:
+
+| Artifact | File Type | Pencil Tools Used |
+|----------|-----------|-------------------|
+| Mindmap | `.pen` | batch_design, get_screenshot |
+| Prototypes | `.pen` | batch_design, get_style_guide, get_screenshot |
+| Flow diagrams | `.pen` | batch_design, get_screenshot |
+
+Key Pencil MCP tools:
+- `mcp__pencil__open_document`: Create/open .pen files
+- `mcp__pencil__batch_design`: Insert/modify design elements
+- `mcp__pencil__get_guidelines`: Get design rules
+- `mcp__pencil__get_style_guide`: Get visual style inspiration
+- `mcp__pencil__get_screenshot`: Validate designs visually
 
 ## Error Handling
 

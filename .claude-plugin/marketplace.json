@@ -65,6 +65,18 @@
       "category": "productivity",
       "homepage": "https://github.com/jvelez79/claude-code-plugins",
       "tags": ["asistente", "personal", "memoria", "tareas", "calendario", "briefing", "investigacion", "productividad"]
+    },
+    {
+      "name": "heartbeat",
+      "description": "Autonomous heartbeat daemon with WhatsApp bidirectional messaging, scheduled prompt execution via claude -p, multi-group support, adaptive intervals, and Tier 0 prefilter. TOS-compliant.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jvelez79"
+      },
+      "source": "./plugins/heartbeat",
+      "category": "productivity",
+      "homepage": "https://github.com/jvelez79/claude-code-plugins",
+      "tags": ["heartbeat", "daemon", "whatsapp", "cron", "scheduler", "autonomous", "launchd", "baileys"]
     }
   ]
 }

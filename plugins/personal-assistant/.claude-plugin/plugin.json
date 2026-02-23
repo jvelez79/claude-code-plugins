@@ -1,0 +1,21 @@
+{
+  "name": "personal-assistant",
+  "version": "1.0.0",
+  "description": "Asistente personal para Claude Code - gestion de memoria, tareas, calendario, briefings diarios e investigacion web. Inspirado en nanoclaw, 100% compatible con TOS de Anthropic.",
+  "author": {
+    "name": "jvelez79"
+  },
+  "repository": "https://github.com/jvelez79/claude-code-plugins",
+  "license": "MIT",
+  "keywords": [
+    "asistente",
+    "personal",
+    "memoria",
+    "tareas",
+    "calendario",
+    "briefing",
+    "investigacion",
+    "productividad",
+    "planificacion"
+  ]
+}

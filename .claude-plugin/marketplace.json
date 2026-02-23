@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "jcv-claude-code-plugins",
-  "description": "Collection of Claude Code plugins: UI improvement automation, feature development workflow, voice notifications, and business advisor",
+  "description": "Collection of Claude Code plugins: UI improvement automation, feature development workflow, voice notifications, business advisor, and personal assistant",
   "owner": {
     "name": "jvelez79"
   },
@@ -53,6 +53,18 @@
       "category": "productivity",
       "homepage": "https://github.com/jvelez79/claude-code-plugins",
       "tags": ["business", "strategy", "validation", "prioritization", "launch", "market-research", "pricing", "personas", "financial"]
+    },
+    {
+      "name": "personal-assistant",
+      "description": "Asistente personal con gestion de memoria, tareas, calendario, briefings e investigacion web. Inspirado en nanoclaw, 100% compatible con TOS.",
+      "version": "1.0.0",
+      "author": {
+        "name": "jvelez79"
+      },
+      "source": "./plugins/personal-assistant",
+      "category": "productivity",
+      "homepage": "https://github.com/jvelez79/claude-code-plugins",
+      "tags": ["asistente", "personal", "memoria", "tareas", "calendario", "briefing", "investigacion", "productividad"]
     }
   ]
 }

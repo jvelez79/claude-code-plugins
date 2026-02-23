@@ -1,0 +1,11 @@
+{
+  "name": "heartbeat",
+  "version": "1.0.0",
+  "description": "Autonomous heartbeat daemon with WhatsApp messaging, multi-group support, and scheduled prompt execution via claude -p",
+  "author": {
+    "name": "jvelez79"
+  },
+  "repository": "https://github.com/jvelez79/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["heartbeat", "cron", "whatsapp", "daemon", "autonomous", "scheduling"]
+}

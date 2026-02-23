@@ -27,12 +27,12 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/install-daemon.sh "$(pwd)"
 3. Check the logs for the QR code:
 
 ```bash
-tail -20 .claude/heartbeat/logs/daemon.log
+tail -20 .claude/pa/heartbeat/logs/daemon.log
 ```
 
 4. Tell the user to scan the QR code with WhatsApp (Settings > Linked Devices > Link a Device).
 
-5. Once connected, create a default config if it doesn't exist. Write `.claude/heartbeat/config.json`:
+5. Once connected, create a default config if it doesn't exist. Write `.claude/pa/heartbeat/config.json`:
 ```json
 {
   "quiet_hours": { "start": "23:00", "end": "07:00" },

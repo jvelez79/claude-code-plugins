@@ -18,7 +18,7 @@ npm install --production 2>/dev/null
 echo "Building TypeScript..."
 npx tsc
 
-DATA_DIR="$PROJECT_ROOT/.claude/heartbeat"
+DATA_DIR="$PROJECT_ROOT/.claude/pa/heartbeat"
 mkdir -p "$DATA_DIR/store/auth" "$DATA_DIR/groups" "$DATA_DIR/logs"
 
 NODE_PATH=$(which node)

@@ -25,11 +25,11 @@
         <key>HOME</key>
         <string>{{HOME}}</string>
         <key>HEARTBEAT_DATA_DIR</key>
-        <string>{{PROJECT_ROOT}}/.claude/heartbeat</string>
+        <string>{{PROJECT_ROOT}}/.claude/pa/heartbeat</string>
     </dict>
     <key>StandardOutPath</key>
-    <string>{{PROJECT_ROOT}}/.claude/heartbeat/logs/daemon.log</string>
+    <string>{{PROJECT_ROOT}}/.claude/pa/heartbeat/logs/daemon.log</string>
     <key>StandardErrorPath</key>
-    <string>{{PROJECT_ROOT}}/.claude/heartbeat/logs/daemon.error.log</string>
+    <string>{{PROJECT_ROOT}}/.claude/pa/heartbeat/logs/daemon.error.log</string>
 </dict>
 </plist>

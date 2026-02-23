@@ -17,5 +17,5 @@ fi
 
 echo ""
 echo "=== Heartbeat daemon uninstalled ==="
-echo "Note: Data in .claude/heartbeat/ was NOT deleted."
-echo "To remove data: rm -rf .claude/heartbeat/"
+echo "Note: Data in .claude/pa/heartbeat/ was NOT deleted."
+echo "To remove data: rm -rf .claude/pa/heartbeat/"

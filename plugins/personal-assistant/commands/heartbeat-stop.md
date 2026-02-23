@@ -16,4 +16,4 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/uninstall-daemon.sh
 ```
 
 Confirm to the user that the daemon has been stopped and the launchd service removed.
-Note that data in `.claude/heartbeat/` is preserved.
+Note that data in `.claude/pa/heartbeat/` is preserved.

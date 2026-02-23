@@ -1,7 +1,7 @@
 {
   "name": "personal-assistant",
-  "version": "1.0.0",
-  "description": "Asistente personal para Claude Code - gestion de memoria, tareas, calendario, briefings diarios e investigacion web. Inspirado en nanoclaw, 100% compatible con TOS de Anthropic.",
+  "version": "2.0.0",
+  "description": "Asistente personal con heartbeat autonomo: daemon WhatsApp bidireccional, prompts programados via claude -p, multi-grupo, memoria, tareas, calendario y briefings. TOS-compliant.",
   "author": {
     "name": "jvelez79"
   },
@@ -16,6 +16,12 @@
     "briefing",
     "investigacion",
     "productividad",
-    "planificacion"
+    "planificacion",
+    "heartbeat",
+    "daemon",
+    "whatsapp",
+    "cron",
+    "scheduler",
+    "launchd"
   ]
 }

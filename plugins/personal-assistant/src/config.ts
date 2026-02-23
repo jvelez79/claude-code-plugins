@@ -3,7 +3,7 @@ import fs from 'fs';
 import { HeartbeatConfig } from './types.js';
 
 export const DATA_DIR = process.env.HEARTBEAT_DATA_DIR
-  || path.resolve(process.cwd(), '.claude', 'heartbeat');
+  || path.resolve(process.cwd(), '.claude', 'pa', 'heartbeat');
 
 export const STORE_DIR = path.join(DATA_DIR, 'store');
 export const GROUPS_DIR = path.join(DATA_DIR, 'groups');

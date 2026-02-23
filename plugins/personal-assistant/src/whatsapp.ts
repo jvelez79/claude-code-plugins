@@ -10,6 +10,7 @@ import { logger } from './logger.js';
 
 let sock: WASocket | null = null;
 let messageHandler: ((jid: string, senderName: string, content: string, timestamp: string) => void) | null = null;
+let reconnectAttempt = 0;
 
 export function onMessage(
   handler: (jid: string, senderName: string, content: string, timestamp: string) => void,
@@ -18,6 +19,13 @@ export function onMessage(
 }
 
 export async function connectWhatsApp(): Promise<WASocket> {
+  if (sock) {
+    sock.ev.removeAllListeners('creds.update');
+    sock.ev.removeAllListeners('connection.update');
+    sock.ev.removeAllListeners('messages.upsert');
+    sock.end(undefined);
+  }
+
   const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
 
   sock = makeWASocket({
@@ -41,7 +49,10 @@ export async function connectWhatsApp(): Promise<WASocket> {
       logger.warn({ statusCode, shouldReconnect }, 'WhatsApp connection closed');
 
       if (shouldReconnect) {
-        setTimeout(() => connectWhatsApp(), 5000);
+        const delay = Math.min(5000 * Math.pow(2, reconnectAttempt), 300_000);
+        reconnectAttempt++;
+        logger.info({ delay, attempt: reconnectAttempt }, 'Scheduling reconnection');
+        setTimeout(() => connectWhatsApp(), delay);
       } else {
         logger.error('WhatsApp logged out. Re-run /heartbeat-start to re-authenticate.');
         process.exit(1);
@@ -49,6 +60,7 @@ export async function connectWhatsApp(): Promise<WASocket> {
     }
 
     if (connection === 'open') {
+      reconnectAttempt = 0;
       logger.info('WhatsApp connected');
     }
   });
@@ -67,9 +79,9 @@ export async function connectWhatsApp(): Promise<WASocket> {
       if (!content) continue;
 
       const senderName = msg.pushName || msg.key.participant || 'Unknown';
-      const timestamp = new Date(
-        (msg.messageTimestamp as number) * 1000,
-      ).toISOString();
+      const rawTs = msg.messageTimestamp;
+      const tsNumber = typeof rawTs === 'number' ? rawTs : Number(rawTs);
+      const timestamp = isNaN(tsNumber) ? new Date().toISOString() : new Date(tsNumber * 1000).toISOString();
 
       if (messageHandler) {
         messageHandler(jid, senderName, content, timestamp);

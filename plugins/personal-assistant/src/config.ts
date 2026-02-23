@@ -42,13 +42,28 @@ const DEFAULT_CONFIG: HeartbeatConfig = {
   maxConcurrentExecutions: 2,
 };
 
+let cachedConfig: HeartbeatConfig | null = null;
+let cachedAt = 0;
+
 export function loadConfig(): HeartbeatConfig {
+  const now = Date.now();
+  if (cachedConfig && now - cachedAt < 60_000) return cachedConfig;
   const configPath = path.join(DATA_DIR, 'config.json');
+  let config: HeartbeatConfig;
   if (fs.existsSync(configPath)) {
     const raw = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    return { ...DEFAULT_CONFIG, ...raw };
+    config = {
+      ...DEFAULT_CONFIG,
+      ...raw,
+      quietHours: { ...DEFAULT_CONFIG.quietHours, ...raw.quietHours },
+      adaptiveIntervals: { ...DEFAULT_CONFIG.adaptiveIntervals, ...raw.adaptiveIntervals },
+    };
+  } else {
+    config = DEFAULT_CONFIG;
   }
-  return DEFAULT_CONFIG;
+  cachedConfig = config;
+  cachedAt = now;
+  return config;
 }
 
 export function saveConfig(config: HeartbeatConfig): void {
@@ -61,4 +76,8 @@ export function ensureDirectories(): void {
   for (const dir of [DATA_DIR, STORE_DIR, GROUPS_DIR, LOGS_DIR, AUTH_DIR]) {
     fs.mkdirSync(dir, { recursive: true });
   }
+}
+
+export function estimateCost(durationMs: number): number {
+  return Math.round((durationMs / 30000) * 0.01 * 1000) / 1000;
 }

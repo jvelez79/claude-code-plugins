@@ -1,6 +1,6 @@
 import { ensureDirectories } from './config.js';
-import { initDatabase } from './db.js';
-import { connectWhatsApp, onMessage } from './whatsapp.js';
+import { initDatabase, closeDatabase } from './db.js';
+import { connectWhatsApp, getSocket, onMessage } from './whatsapp.js';
 import { handleIncomingMessage } from './router.js';
 import { startScheduler, stopScheduler } from './scheduler.js';
 import { logger } from './logger.js';
@@ -30,6 +30,15 @@ async function main(): Promise<void> {
   const shutdown = () => {
     logger.info('Shutting down...');
     stopScheduler();
+
+    const socket = getSocket();
+    if (socket) {
+      socket.end(undefined);
+    }
+
+    closeDatabase();
+
+    logger.info('Shutdown complete');
     process.exit(0);
   };
 

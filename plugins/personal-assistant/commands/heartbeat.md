@@ -6,13 +6,18 @@ allowed-tools:
   - "Write"
   - "Bash(launchctl:*)"
   - "Bash(tail:*)"
-  - "Bash(sqlite3:*)"
+  - "Bash(node:*)"
   - "AskUserQuestion"
 ---
 
 # Heartbeat Management
 
 Manage heartbeat tasks and check daemon status.
+
+All database operations use the parameterized helper script to prevent SQL injection:
+```
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js <operation> [args...]
+```
 
 ## Arguments
 
@@ -23,9 +28,11 @@ Parse `$ARGUMENTS` to determine the subcommand:
 Show daemon status and overview:
 1. Check if launchd service is running: `launchctl list | grep claude-heartbeat`
 2. Read `.claude/pa/heartbeat/config.json` for current settings
-3. Count registered groups from the database
-4. Count active tasks
-5. Show recent activity log entries
+3. Query the database for counts and recent activity:
+
+```bash
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js status
+```
 
 ### `/heartbeat add <group-folder>`
 
@@ -37,10 +44,10 @@ Create a new scheduled task for a group. Ask the user interactively:
 5. **Notify conditions**: always, never, or keyword-based (containsAny/containsAll)
 
 Generate a task ID like `task-{timestamp}-{random}`.
-Write the task to the SQLite database at `.claude/pa/heartbeat/store/heartbeat.db`:
+Write the task to the SQLite database:
 
 ```bash
-sqlite3 .claude/pa/heartbeat/store/heartbeat.db "INSERT INTO tasks (id, group_id, prompt, schedule_type, schedule_value, context_mode, next_run, notify_on, status, created_at) VALUES ('$TASK_ID', '$GROUP_JID', '$PROMPT', '$TYPE', '$VALUE', '$MODE', '$NEXT_RUN', '$NOTIFY', 'active', '$NOW')"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js insert-task "$TASK_ID" "$GROUP_JID" "$PROMPT" "$TYPE" "$VALUE" "$MODE" "$NEXT_RUN" "$NOTIFY"
 ```
 
 ### `/heartbeat list [group-folder]`
@@ -48,7 +55,7 @@ sqlite3 .claude/pa/heartbeat/store/heartbeat.db "INSERT INTO tasks (id, group_id
 List active tasks:
 
 ```bash
-sqlite3 -header -column .claude/pa/heartbeat/store/heartbeat.db "SELECT id, group_id, schedule_type, schedule_value, status, next_run FROM tasks WHERE status != 'completed'"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js list-tasks
 ```
 
 ### `/heartbeat remove <task-id>`
@@ -56,7 +63,7 @@ sqlite3 -header -column .claude/pa/heartbeat/store/heartbeat.db "SELECT id, grou
 Delete a task:
 
 ```bash
-sqlite3 .claude/pa/heartbeat/store/heartbeat.db "DELETE FROM tasks WHERE id = '$TASK_ID'"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js delete-task "$TASK_ID"
 ```
 
 ### `/heartbeat logs [group-folder]`
@@ -64,5 +71,5 @@ sqlite3 .claude/pa/heartbeat/store/heartbeat.db "DELETE FROM tasks WHERE id = '$
 Show recent activity:
 
 ```bash
-sqlite3 -header -column .claude/pa/heartbeat/store/heartbeat.db "SELECT type, group_id, started_at, duration_ms, status, summary FROM activity_log ORDER BY started_at DESC LIMIT 20"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js list-logs
 ```

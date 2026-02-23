@@ -4,7 +4,7 @@ argument-hint: "<register|config|remove> [group-folder]"
 allowed-tools:
   - "Read"
   - "Write"
-  - "Bash(sqlite3:*)"
+  - "Bash(node:*)"
   - "Bash(tail:*)"
   - "Bash(mkdir:*)"
   - "AskUserQuestion"
@@ -13,6 +13,11 @@ allowed-tools:
 # Heartbeat Group Management
 
 Manage WhatsApp groups registered with the heartbeat daemon.
+
+All database operations use the parameterized helper script to prevent SQL injection:
+```
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js <operation> [args...]
+```
 
 ## Arguments
 
@@ -29,7 +34,7 @@ Register a new WhatsApp group:
 5. Insert into database:
 
 ```bash
-sqlite3 .claude/pa/heartbeat/store/heartbeat.db "INSERT INTO groups (id, name, folder, trigger_word, model, is_main, active, registered_at) VALUES ('$JID', '$NAME', '$FOLDER', '$TRIGGER', $MODEL, $IS_MAIN, 1, '$NOW')"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js insert-group "$JID" "$NAME" "$FOLDER" "$TRIGGER" "$MODEL" "$IS_MAIN"
 ```
 
 ### `/heartbeat-group config <folder>`
@@ -41,5 +46,5 @@ Update group settings. Read current config from DB, let user modify trigger, mod
 Deactivate a group:
 
 ```bash
-sqlite3 .claude/pa/heartbeat/store/heartbeat.db "UPDATE groups SET active = 0 WHERE folder = '$FOLDER'"
+node ${CLAUDE_PLUGIN_ROOT}/scripts/heartbeat-db.js deactivate-group "$FOLDER"
 ```

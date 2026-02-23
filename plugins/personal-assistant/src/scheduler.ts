@@ -10,11 +10,12 @@ import {
   HEARTBEAT_INTERVAL_POST_ACTION,
   HEARTBEAT_INTERVAL_HIGH_ACTIVITY,
   loadConfig,
+  estimateCost,
 } from './config.js';
 import { getDueTasks, updateTaskAfterRun, logActivity, getGroup } from './db.js';
 import { executePrompt } from './executor.js';
 import { runPrefilter, isQuietHours, isHighActivity } from './prefilter.js';
-import { sendMessage } from './whatsapp.js';
+import { notify } from './notifier.js';
 import { logger } from './logger.js';
 import { ScheduledTask } from './types.js';
 
@@ -87,19 +88,21 @@ async function runTask(task: ScheduledTask): Promise<void> {
       }
     }
 
-    const groupDir = path.join(GROUPS_DIR, task.groupId);
-    const memoryDir = path.join(groupDir, 'memory');
-    if (fs.existsSync(memoryDir)) {
-      for (const file of fs.readdirSync(memoryDir)) {
-        if (file.endsWith('.md')) {
-          const tag = file.replace('.md', '');
-          const content = fs.readFileSync(path.join(memoryDir, file), 'utf-8');
-          prompt += `\n\n<${tag}>\n${content}\n</${tag}>`;
+    const group = getGroup(task.groupId);
+    const groupDir = group ? path.join(GROUPS_DIR, group.folder) : null;
+    if (groupDir) {
+      const memoryDir = path.join(groupDir, 'memory');
+      if (fs.existsSync(memoryDir)) {
+        for (const file of fs.readdirSync(memoryDir)) {
+          if (file.endsWith('.md')) {
+            const tag = file.replace('.md', '');
+            const content = fs.readFileSync(path.join(memoryDir, file), 'utf-8');
+            prompt += `\n\n<${tag}>\n${content}\n</${tag}>`;
+          }
         }
       }
     }
 
-    const group = getGroup(task.groupId);
     const result = await executePrompt(prompt, { model: group?.model });
 
     const lastResult = result.stdout.trim() || result.stderr.trim() || null;
@@ -109,7 +112,7 @@ async function runTask(task: ScheduledTask): Promise<void> {
     updateTaskAfterRun(task.id, new Date().toISOString(), lastResult, nextRun, status);
 
     if (lastResult && shouldNotify(task, lastResult)) {
-      await sendMessage(task.groupId, lastResult);
+      await notify(task.groupId, lastResult);
     }
 
     logActivity({
@@ -120,7 +123,7 @@ async function runTask(task: ScheduledTask): Promise<void> {
       durationMs: Date.now() - startTime,
       status: result.exitCode === 0 ? 'success' : 'error',
       summary: lastResult?.substring(0, 200) || null,
-      costEstimate: Math.round((result.durationMs / 30000) * 0.01 * 1000) / 1000,
+      costEstimate: estimateCost(result.durationMs),
     });
 
     logger.info({ taskId: task.id, durationMs: Date.now() - startTime, nextRun }, 'Task completed');

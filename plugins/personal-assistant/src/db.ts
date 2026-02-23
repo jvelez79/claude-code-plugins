@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { DB_PATH, STORE_DIR } from './config.js';
+import { DB_PATH, STORE_DIR, loadConfig } from './config.js';
 import { RegisteredGroup, StoredMessage, ScheduledTask, ActivityLogEntry } from './types.js';
 
 let db: Database.Database;
@@ -69,7 +69,14 @@ export function initDatabase(): void {
 }
 
 export function getDb(): Database.Database {
+  if (!db) throw new Error('Database not initialized. Call initDatabase() first.');
   return db;
+}
+
+export function closeDatabase(): void {
+  if (db) {
+    db.close();
+  }
 }
 
 // --- Groups ---
@@ -226,8 +233,16 @@ export function getRecentActivity(limit: number, groupId?: string): ActivityLogE
 }
 
 export function getDailySpend(): number {
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+  const config = loadConfig();
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: config.timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  const todayStr = formatter.format(now); // YYYY-MM-DD
+  const todayStart = new Date(`${todayStr}T00:00:00`);
   const row = db.prepare(`
     SELECT COALESCE(SUM(cost_estimate), 0) as total
     FROM activity_log WHERE started_at >= ? AND status = 'success'

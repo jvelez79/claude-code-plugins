@@ -6,8 +6,15 @@ import { logger } from './logger.js';
 export function isQuietHours(): boolean {
   const config = loadConfig();
   const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: config.timezone,
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(now);
+  const hours = parseInt(parts.find(p => p.type === 'hour')!.value, 10);
+  const minutes = parseInt(parts.find(p => p.type === 'minute')!.value, 10);
   const current = hours * 60 + minutes;
 
   const [startH, startM] = config.quietHours.start.split(':').map(Number);

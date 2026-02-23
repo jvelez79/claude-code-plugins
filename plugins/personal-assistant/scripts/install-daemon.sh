@@ -13,7 +13,7 @@ echo "Project root: $PROJECT_ROOT"
 
 echo "Installing dependencies..."
 cd "$PLUGIN_ROOT"
-npm install --production 2>/dev/null
+npm install 2>/dev/null
 
 echo "Building TypeScript..."
 npx tsc

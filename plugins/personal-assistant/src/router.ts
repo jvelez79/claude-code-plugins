@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { GROUPS_DIR, MESSAGE_CONTEXT_LIMIT } from './config.js';
+import { GROUPS_DIR, MESSAGE_CONTEXT_LIMIT, estimateCost } from './config.js';
 import { getGroup, storeMessage, getRecentMessages, logActivity } from './db.js';
 import { executePrompt } from './executor.js';
-import { sendMessage } from './whatsapp.js';
+import { notify } from './notifier.js';
 import { logger } from './logger.js';
 
 export async function handleIncomingMessage(
@@ -28,7 +28,7 @@ export async function handleIncomingMessage(
     const result = await executePrompt(prompt, { model: group.model });
 
     if (result.stdout.trim()) {
-      await sendMessage(jid, result.stdout.trim());
+      await notify(jid, result.stdout.trim());
     }
 
     logActivity({
@@ -84,9 +84,6 @@ function buildPrompt(groupId: string, folder: string, senderName: string, curren
 }
 
 function escapeXml(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
-function estimateCost(durationMs: number): number {
-  return Math.round((durationMs / 30000) * 0.01 * 1000) / 1000;
-}

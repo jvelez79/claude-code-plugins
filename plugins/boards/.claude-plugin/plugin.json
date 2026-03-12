@@ -1,0 +1,21 @@
+{
+  "name": "boards",
+  "version": "1.0.0",
+  "description": "Multi-agent board reviews — assemble panels of specialized AI agents to analyze business decisions or UI/UX designs from multiple expert perspectives",
+  "author": {
+    "name": "jvelez79"
+  },
+  "repository": "https://github.com/jvelez79/claude-code-plugins",
+  "license": "MIT",
+  "keywords": [
+    "board",
+    "meeting",
+    "multi-agent",
+    "review",
+    "ux",
+    "ui",
+    "strategy",
+    "analysis",
+    "decision-making"
+  ]
+}
